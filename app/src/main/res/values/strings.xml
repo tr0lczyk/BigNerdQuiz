@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">BigNerdQuiz</string>
+    <string name="question_canberra">Canberra is Australia\'s capital</string>
+    <string name="True">True</string>
+    <string name="False">False</string>
+    <string name="correct_toast">Correct answer!</string>
+    <string name="incorrect_toast">Wrong answer :(</string>
+    <string name="next_button">Next</string>
+    <string name="question_ocean">Pacific is larger then Atlantic ocean</string>
+    <string name="question_mideast">Suez Canal connects Red Sea with the Indian Ocean</string>
+    <string name="question_africa">Source of the Nil river is in Egypt</string>
+    <string name="question_america">Amazon is the longest river in both Americas</string>
+    <string name="question_asiaa">Baykal lake is the oldest and the deepest in the world</string>
+    
+</resources>
