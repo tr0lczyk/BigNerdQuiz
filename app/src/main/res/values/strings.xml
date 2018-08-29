@@ -11,5 +11,6 @@
     <string name="question_africa">Source of the Nil river is in Egypt</string>
     <string name="question_america">Amazon is the longest river in both Americas</string>
     <string name="question_asiaa">Baykal lake is the oldest and the deepest in the world</string>
-    
+    <string name="previous">previous</string>
+
 </resources>

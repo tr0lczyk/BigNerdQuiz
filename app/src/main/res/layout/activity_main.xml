@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:padding="24dp"
-        android:text="@string/canberra"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -43,12 +42,22 @@
 
     <Button
         android:id="@+id/next_button"
-        android:layout_width="wrap_content"
+        android:layout_width="35dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/next_button"
-        app:layout_constraintEnd_toEndOf="@+id/false_button"
+        android:drawablePadding="4dp"
+        android:drawableRight="@drawable/arrow_right"
         app:layout_constraintStart_toStartOf="@+id/false_button"
         app:layout_constraintTop_toBottomOf="@+id/false_button" />
+
+    <Button
+        android:id="@+id/prvious_button"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:drawablePadding="4dp"
+        android:drawableRight="@drawable/arrow_left"
+        app:layout_constraintEnd_toEndOf="@+id/true_button"
+        app:layout_constraintTop_toBottomOf="@+id/true_button" />
 
 </android.support.constraint.ConstraintLayout>
