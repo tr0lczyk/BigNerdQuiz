@@ -12,5 +12,15 @@
     <string name="question_america">Amazon is the longest river in both Americas</string>
     <string name="question_asiaa">Baykal lake is the oldest and the deepest in the world</string>
     <string name="previous">previous</string>
+    <string name="previous_question">previous question</string>
+    <string name="next_question">next question</string>
+    <string name="shall_not_more_tries">You\'ve already tried!</string>
+    <string name="guessed_correctly">Wow, you \'ve guessed correctly\ </string>
+    <string name="dot">\ .</string>
+    <string name="dialog_message">You have already finished the game but you can start over!</string>
+    <string name="start_over">Start over!</string>
+    <string name="cancel_dialog">Cancel</string>
+    <string name="restart_message">Do you want to reset your game?</string>
+    <string name="reset">reset</string>
 
 </resources>
