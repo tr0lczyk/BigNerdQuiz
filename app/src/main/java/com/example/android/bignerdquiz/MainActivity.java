@@ -1,6 +1,7 @@
 package com.example.android.bignerdquiz;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.PersistableBundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private Button resetButton;
     private int alreadyWon = 0;
     private TextView questionTextView;
-
     private Question[] questionBank = new Question[]{
             new Question(R.string.question_canberra, true),
             new Question(R.string.question_ocean, true),
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
             new Question(R.string.question_asiaa, true)
     };
     private int currentIndex = 0;
-
     private final String TAG = "MainActivity";
     private final String KEY_INDEX = "index";
     private final String KEY_LIST = "list";
@@ -47,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView questionsNumber;
     private TextView questionIndex;
     private TextView score;
+    private Button cheatButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,35 +77,7 @@ public class MainActivity extends AppCompatActivity {
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!haveIbeenThere.contains(currentIndex)) {
-                    checkAnswer(true);
-                } else if (alreadyWon == 1) {
-                    final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    dialog.setTitle("BigNerdQuiz")
-                            .setMessage(getString(R.string.dialog_message))
-                            .setCancelable(false)
-                            .setPositiveButton(getString(R.string.start_over), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    pointSum = 0;
-                                    haveIbeenThere = new ArrayList<>();
-                                    alreadyWon = 0;
-                                    currentIndex = 0;
-                                    updateQuestion();
-                                    score.setText("" + pointSum);
-                                    dialogInterface.dismiss();
-                                }
-                            }).setNegativeButton(getString(R.string.cancel_dialog), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    }).create().show();
-
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.shall_not_more_tries),
-                            Toast.LENGTH_SHORT).show();
-                }
+                dialogWindow(true);
             }
         });
 
@@ -113,35 +85,7 @@ public class MainActivity extends AppCompatActivity {
         falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!haveIbeenThere.contains(currentIndex)) {
-                    checkAnswer(false);
-                } else if (alreadyWon == 1) {
-                    final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    dialog.setTitle("BigNerdQuiz")
-                            .setMessage(getString(R.string.dialog_message))
-                            .setCancelable(false)
-                            .setPositiveButton(getString(R.string.start_over), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    pointSum = 0;
-                                    haveIbeenThere = new ArrayList<>();
-                                    alreadyWon = 0;
-                                    currentIndex = 0;
-                                    updateQuestion();
-                                    score.setText("" + pointSum);
-                                    dialogInterface.dismiss();
-                                }
-                            }).setNegativeButton(getString(R.string.cancel_dialog), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    }).create().show();
-
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.shall_not_more_tries),
-                            Toast.LENGTH_SHORT).show();
-                }
+                dialogWindow(false);
             }
         });
 
@@ -170,29 +114,19 @@ public class MainActivity extends AppCompatActivity {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                dialog.setTitle("BigNerdQuiz")
-                        .setMessage(getString(R.string.restart_message))
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                pointSum = 0;
-                                haveIbeenThere = new ArrayList<>();
-                                alreadyWon = 0;
-                                currentIndex = 0;
-                                updateQuestion();
-                                score.setText("" + pointSum);
-                                dialogInterface.dismiss();
-                            }
-                        }).setNegativeButton(getString(R.string.cancel_dialog), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).create().show();
+                dialogWindowReset();
             }
         });
+
+        cheatButton = findViewById(R.id.cheat_button);
+        cheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CheatActivity.class);
+                startActivity(intent);
+            }
+        });
+
         updateQuestion();
     }
 
@@ -228,6 +162,61 @@ public class MainActivity extends AppCompatActivity {
 
     private void setCurrentIndex(){
         questionIndex.setText(""+ (currentIndex + 1));
+    }
+
+    private void resetEverything(){
+        pointSum = 0;
+        haveIbeenThere = new ArrayList<>();
+        alreadyWon = 0;
+        currentIndex = 0;
+        updateQuestion();
+        score.setText("" + pointSum);
+    }
+
+    private void dialogWindow(boolean verify){
+        if (!haveIbeenThere.contains(currentIndex)) {
+            checkAnswer(verify);
+        } else if (alreadyWon == 1) {
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+            dialog.setTitle("BigNerdQuiz")
+                    .setMessage(getString(R.string.dialog_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.start_over), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            resetEverything();
+                            dialogInterface.dismiss();
+                        }
+                    }).setNegativeButton(getString(R.string.cancel_dialog), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            }).create().show();
+
+        } else {
+            Toast.makeText(MainActivity.this, getString(R.string.shall_not_more_tries),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void dialogWindowReset(){
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+        dialog.setTitle("BigNerdQuiz")
+                .setMessage(getString(R.string.restart_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        resetEverything();
+                        dialogInterface.dismiss();
+                    }
+                }).setNegativeButton(getString(R.string.cancel_dialog), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).create().show();
     }
 
     @Override
