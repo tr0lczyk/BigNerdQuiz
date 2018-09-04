@@ -122,11 +122,11 @@ public class MainActivity extends AppCompatActivity {
         cheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CheatActivity.class);
+                boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(MainActivity.this,answerIsTrue);
                 startActivity(intent);
             }
         });
-
         updateQuestion();
     }
 
