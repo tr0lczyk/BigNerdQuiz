@@ -1,23 +1,23 @@
 package com.example.android.bignerdquiz;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.PersistableBundle;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.android.bignerdquiz.CheatActivity.EXTRA_ANSWER_SHOWN;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,16 +37,19 @@ public class MainActivity extends AppCompatActivity {
             new Question(R.string.question_asiaa, true)
     };
     private int currentIndex = 0;
-    private final String TAG = "MainActivity";
-    private final String KEY_INDEX = "index";
-    private final String KEY_LIST = "list";
-    private final String KEY_SUM = "sum";
+    private static final String TAG = "MainActivity";
+    private static final String KEY_INDEX = "index";
+    private static final String KEY_LIST = "list";
+    private static final String KEY_SUM = "sum";
+    private static final String KEY_CHEATER = "cheat";
     private int pointSum = 0;
     private List<Integer> haveIbeenThere = new ArrayList<>();
     private TextView questionsNumber;
     private TextView questionIndex;
     private TextView score;
     private Button cheatButton;
+    private static final int REQUEST_CODE_CHEAT = 0;
+    private boolean isCheater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +60,10 @@ public class MainActivity extends AppCompatActivity {
             currentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             haveIbeenThere = (List<Integer>) savedInstanceState.getSerializable(KEY_LIST);
             pointSum = savedInstanceState.getInt(KEY_SUM);
+            isCheater = savedInstanceState.getBoolean(KEY_CHEATER);
         }
         questionsNumber = findViewById(R.id.textView5);
-        questionsNumber.setText("/"+questionBank.length);
+        questionsNumber.setText("/" + questionBank.length);
         questionIndex = findViewById(R.id.textView3);
         setCurrentIndex();
         score = findViewById(R.id.textView4);
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentIndex = (currentIndex + 1) % questionBank.length;
+                isCheater = false;
                 updateQuestion();
             }
         });
@@ -123,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
-                Intent intent = CheatActivity.newIntent(MainActivity.this,answerIsTrue);
-                startActivity(intent);
+                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });
         updateQuestion();
@@ -139,13 +144,17 @@ public class MainActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
         int messageResId;
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
-            pointSum++;
-            haveIbeenThere.add(currentIndex);
+        if (isCheater) {
+            messageResId = R.string.judgment_toast;
         } else {
-            messageResId = R.string.incorrect_toast;
-            haveIbeenThere.add(currentIndex);
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+                pointSum++;
+                haveIbeenThere.add(currentIndex);
+            } else {
+                messageResId = R.string.incorrect_toast;
+                haveIbeenThere.add(currentIndex);
+            }
         }
         score.setText("" + pointSum);
         int percentage = pointSum * 100 / questionBank.length;
@@ -153,18 +162,18 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, getString(R.string.guessed_correctly) +
                             percentage + "%",
                     Toast.LENGTH_SHORT).show();
-            Log.i(TAG,"final score is: " + percentage);
+            Log.i(TAG, "final score is: " + percentage);
             alreadyWon = 1;
         } else {
             Toast.makeText(MainActivity.this, messageResId, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void setCurrentIndex(){
-        questionIndex.setText(""+ (currentIndex + 1));
+    private void setCurrentIndex() {
+        questionIndex.setText("" + (currentIndex + 1));
     }
 
-    private void resetEverything(){
+    private void resetEverything() {
         pointSum = 0;
         haveIbeenThere = new ArrayList<>();
         alreadyWon = 0;
@@ -173,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         score.setText("" + pointSum);
     }
 
-    private void dialogWindow(boolean verify){
+    private void dialogWindow(boolean verify) {
         if (!haveIbeenThere.contains(currentIndex)) {
             checkAnswer(verify);
         } else if (alreadyWon == 1) {
@@ -200,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void dialogWindowReset(){
+    private void dialogWindowReset() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
         dialog.setTitle("BigNerdQuiz")
                 .setMessage(getString(R.string.restart_message))
@@ -226,6 +235,17 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putInt(KEY_INDEX, currentIndex);
         savedInstanceState.putSerializable(KEY_LIST, (Serializable) haveIbeenThere);
         savedInstanceState.putInt(KEY_SUM, pointSum);
+        savedInstanceState.putBoolean(KEY_CHEATER, isCheater);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_CHEAT) {
+            if (data != null) {
+                isCheater = CheatActivity.wasAnswerShown(data);
+            }
+        }
+
     }
 
     @Override
