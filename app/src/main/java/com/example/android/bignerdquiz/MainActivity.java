@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         int messageResId;
         if (isCheater) {
             messageResId = R.string.judgment_toast;
+            haveIbeenThere.add(currentIndex);
         } else {
             if (userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;

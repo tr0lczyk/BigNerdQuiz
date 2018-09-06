@@ -16,7 +16,6 @@ public class CheatActivity extends AppCompatActivity {
     private boolean answerIsTrue;
     private Button showAnswerButton;
     private TextView answerTextView;
-    private String alreadyShown;
 
     public static Intent newIntent(Context packageContext, boolean answerIsTrue) {
         Intent intent = new Intent(packageContext, CheatActivity.class);
@@ -35,8 +34,8 @@ public class CheatActivity extends AppCompatActivity {
         initView();
         answerTextView = findViewById(R.id.answer_text_view);
         if(savedInstanceState != null && savedInstanceState.getString(KEY_ANSWER_TEXT_VIEW) != null){
-            alreadyShown = savedInstanceState.getString(KEY_ANSWER_TEXT_VIEW);
-            answerTextView.setText(alreadyShown);
+            answerTextView.setText(savedInstanceState.getString(KEY_ANSWER_TEXT_VIEW));
+            setAnswerShownResult(true);
 
         }
         answerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue);
