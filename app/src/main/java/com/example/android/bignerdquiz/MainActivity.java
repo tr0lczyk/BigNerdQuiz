@@ -42,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_LIST = "list";
     private static final String KEY_SUM = "sum";
     private static final String KEY_CHEATER = "cheat";
+    private static final String KEY_CHEATER_THREE = "threeTimes";
     private int pointSum = 0;
     private List<Integer> haveIbeenThere = new ArrayList<>();
+    private List<Integer> cheatOnlyThreeTimes = new ArrayList<>();
     private TextView questionsNumber;
     private TextView questionIndex;
     private TextView score;
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             haveIbeenThere = (List<Integer>) savedInstanceState.getSerializable(KEY_LIST);
             pointSum = savedInstanceState.getInt(KEY_SUM);
             isCheater = savedInstanceState.getBoolean(KEY_CHEATER);
+            cheatOnlyThreeTimes = (List<Integer>) savedInstanceState.getSerializable(KEY_CHEATER_THREE);
         }
         questionsNumber = findViewById(R.id.textView5);
         questionsNumber.setText("/" + questionBank.length);
@@ -127,9 +130,15 @@ public class MainActivity extends AppCompatActivity {
         cheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
-                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
-                startActivityForResult(intent, REQUEST_CODE_CHEAT);
+                if(cheatOnlyThreeTimes.size() >= 3){
+                    Toast.makeText(MainActivity.this, "You've already cheated three times!",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
+                    Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
+                    intent.putExtra("cheatThreeTimesIntent",cheatOnlyThreeTimes.size());
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT);
+                }
             }
         });
         updateQuestion();
@@ -147,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
         if (isCheater) {
             messageResId = R.string.judgment_toast;
             haveIbeenThere.add(currentIndex);
+            if(cheatOnlyThreeTimes.size() <= 3){
+                cheatOnlyThreeTimes.add(currentIndex);
+            }
         } else {
             if (userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;
@@ -179,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         haveIbeenThere = new ArrayList<>();
         alreadyWon = 0;
         currentIndex = 0;
+        cheatOnlyThreeTimes = new ArrayList<>();
         updateQuestion();
         score.setText("" + pointSum);
     }
@@ -237,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putSerializable(KEY_LIST, (Serializable) haveIbeenThere);
         savedInstanceState.putInt(KEY_SUM, pointSum);
         savedInstanceState.putBoolean(KEY_CHEATER, isCheater);
+        savedInstanceState.putSerializable(KEY_CHEATER_THREE, (Serializable) cheatOnlyThreeTimes);
     }
 
     @Override
@@ -246,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
                 isCheater = CheatActivity.wasAnswerShown(data);
             }
         }
-
     }
 
     @Override
